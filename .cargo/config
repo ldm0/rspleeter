@@ -1,0 +1,5 @@
+[alias]
+xtask = "run --release --manifest-path ./xtask/Cargo.toml --"
+
+[net]
+git-fetch-with-cli = true
