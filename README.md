@@ -1,6 +1,6 @@
 # rspleeter
 
-Split a song into vocal and accompaniments, taking advantage of machine learning.
+Split a song into vocals and accompaniments, taking advantage of machine learning.
 
 Rust implementation of [`spleeter`](https://github.com/deezer/spleeter). One of the [`rsmpeg`](https://github.com/larksuite/rsmpeg) demos.
 
@@ -10,6 +10,12 @@ Inspired by:
 - https://github.com/gvne/spleeterpp
 
 MSRV: `1.59.0`
+
+You can check the examples we provided.
+
+- Original: <https://ldm0.xyz/assets/ten_years.mp3>
+- Vocal: <https://ldm0.xyz/assets/ten_years-vocals.mp3>
+- Accompaniment: <https://ldm0.xyz/assets/ten_years-accompaniment.mp3>
 
 ## Getting started
 
@@ -22,14 +28,14 @@ curl -L -O https://github.com/ldm0/rspleeter/releases/download/0.1.0-models/mode
 unzip models.zip -d models
 
 # Get a test song.
-curl -O https://ldm0.xyz/assets/noodles.mp3
+curl -O https://ldm0.xyz/assets/ten_years.mp3
 
-# Split the tests song with 2stems model, the output folder is `target/noodles`.
+# Split the tests song with 2stems model, the output folder is `target/ten_years`.
 # Run `cargo xtask run --release -- --help` for more options.
-cargo xtask run --release -- noodles.mp3 target/noodles
+cargo xtask run --release -- ten_years.mp3 target/ten_years
 ```
 
-Then play the `target/noodles/accompaniment.mp3`, have fun!
+Then play the `target/ten_years/accompaniment.mp3`, have fun!
 
 ## FFmpeg dylib
 
