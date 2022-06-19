@@ -17,7 +17,7 @@ Attention: If you are using Windows, read the next section first.
 
 ```bash
 # Prepare pre-trained models
-curl -L -O https://github.com/gvne/spleeterpp/releases/download/models-1.0/models.zip
+curl -L -O https://github.com/ldm0/rspleeter/releases/download/0.1.0-models/models.zip
 
 unzip models.zip -d models
 
