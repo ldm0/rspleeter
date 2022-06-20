@@ -19,7 +19,8 @@ You can check the examples we provided.
 
 ## Getting started
 
-Attention: For Windows, get prebuilt FFmpeg from the release page or manually cross compile FFmpeg is needed. If you are using Windows, read the next section first.
+**Attention**: For Windows developers, get prebuilt FFmpeg from the release page or manually cross compile FFmpeg is needed. If you are using Windows, read the next section first.
+
 
 ```bash
 # Install `nasm` and `libmp3lame`.
@@ -45,6 +46,8 @@ Then play the `target/ten_years/accompaniment.mp3`, have fun!
 
 ## FFmpeg dylib
 
-Download prebuilt FFmpeg artifacts from the release page, decompress it and put it under the source folder. (e.g. `./prebuilt_ffmpeg/lib/libffmpeg.dylib`)
+If you find building ffmpeg annoying, you can skip it by using prebuilt FFmpeg. Download prebuilt FFmpeg artifacts from the release page, decompress it and put it under the source folder. (e.g. `./prebuilt_ffmpeg/lib/libffmpeg.dylib`).
+
+When `cargo xtask` find the prebuilt FFmpeg artifacts, it will link against it and skip the FFmpeg building.
 
 If you want to build it manually, check this [doc](doc/build_ffmpeg_dylib_manually.md).
