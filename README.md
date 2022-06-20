@@ -22,6 +22,12 @@ You can check the examples we provided.
 Attention: If you are using Windows, read the next section first.
 
 ```bash
+# Install `nasm` and `libmp3lame`.
+# macOS
+brew install nasm lame
+# Linux
+sudo apt install nasm libmp3lame-dev
+
 # Prepare pre-trained models
 curl -L -O https://github.com/ldm0/rspleeter/releases/download/0.1.0-models/models.zip
 
