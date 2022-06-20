@@ -19,7 +19,7 @@ You can check the examples we provided.
 
 ## Getting started
 
-Attention: If you are using Windows, read the next section first.
+Attention: For Windows, get prebuilt FFmpeg from the release page or manually cross compile FFmpeg is needed. If you are using Windows, read the next section first.
 
 ```bash
 # Install `nasm` and `libmp3lame`.
@@ -44,8 +44,6 @@ cargo xtask run --release -- ten_years.mp3 target/ten_years
 Then play the `target/ten_years/accompaniment.mp3`, have fun!
 
 ## FFmpeg dylib
-
-For Windows, get prebuilt FFmpeg from the release page or manually cross compile FFmpeg is needed.
 
 Download prebuilt FFmpeg artifacts from the release page, decompress it and put it under the source folder. (e.g. `./prebuilt_ffmpeg/lib/libffmpeg.dylib`)
 
