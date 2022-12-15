@@ -13,9 +13,9 @@ MSRV: `1.59.0`
 
 You can check the examples we provided.
 
-- Original: <https://ldm0.xyz/assets/ten_years.mp3>
-- Vocal: <https://ldm0.xyz/assets/ten_years-vocals.mp3>
-- Accompaniment: <https://ldm0.xyz/assets/ten_years-accompaniment.mp3>
+- Original: <https://ldm0.github.io/assets/ten_years.mp3>
+- Vocal: <https://ldm0.github.io/assets/ten_years-vocals.mp3>
+- Accompaniment: <https://ldm0.github.io/assets/ten_years-accompaniment.mp3>
 
 ## Getting started
 
@@ -35,7 +35,7 @@ curl -L -O https://github.com/ldm0/rspleeter/releases/download/0.1.0-models/mode
 unzip models.zip -d models
 
 # Get a test song.
-curl -O https://ldm0.xyz/assets/ten_years.mp3
+curl -O https://ldm0.github.io/assets/ten_years.mp3
 
 # Split the tests song with 2stems model, the output folder is `target/ten_years`.
 # Run `cargo xtask run --release -- --help` for more options.
