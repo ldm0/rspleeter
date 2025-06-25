@@ -23,12 +23,14 @@ const LD_PATH: &str = "LD_LIBRARY_PATH";
 #[cfg(target_os = "windows")]
 const PATH: &str = "PATH";
 
+const BRANCH: &str = "release/7.0";
+
 fn clone_ffmpeg(target_path: &Path) -> Result<()> {
     let status = Command::new("git")
         .arg("clone")
         .arg("--single-branch")
         .arg("--branch")
-        .arg("release/5.0")
+        .arg(BRANCH)
         .arg("--depth")
         .arg("1")
         .arg("https://github.com/ffmpeg/ffmpeg")
@@ -36,6 +38,33 @@ fn clone_ffmpeg(target_path: &Path) -> Result<()> {
         .status()?;
     if !status.success() {
         bail!("Make install failed.");
+    }
+
+    Ok(())
+}
+
+fn checkout_ffmpeg(ffmpeg_path: &Path) -> Result<()> {
+    let status = Command::new("git")
+        .current_dir(ffmpeg_path)
+        .arg("fetch")
+        .arg("origin")
+        .arg(BRANCH)
+        .arg("--depth")
+        .arg("1")
+        .status()?;
+
+    if !status.success() {
+        bail!("Fetching {} failed.", BRANCH);
+    }
+
+    let status = Command::new("git")
+        .current_dir(ffmpeg_path)
+        .arg("checkout")
+        .arg("FETCH_HEAD")
+        .status()?;
+
+    if !status.success() {
+        bail!("Checkout to {} failed.", BRANCH);
     }
 
     Ok(())
@@ -55,6 +84,8 @@ fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
         .arg("--disable-bsfs")
         .arg("--disable-indevs")
         .arg("--disable-outdevs")
+        .arg("--extra-cflags=-I/opt/homebrew/include")
+        .arg("--extra-ldflags=-L/opt/homebrew/lib")
         .arg("--disable-filters")
         .arg("--disable-programs")
         .arg("--enable-protocol=file")
@@ -101,6 +132,8 @@ fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
             .arg("libavutil.a")
             .arg("libswresample.a")
             .arg("libswscale.a")
+            .arg("-I/opt/homebrew/include")
+            .arg("-L/opt/homebrew/lib")
             .arg("-framework")
             .arg("VideoToolbox")
             .arg("-framework")
@@ -186,6 +219,9 @@ fn main() -> Result<()> {
             clone_ffmpeg(&ffmpeg_path).context("Clone ffmpeg failed.")?;
         }
         info!("FFmpeg repo cloned.");
+
+        info!("Checkout to {}...", BRANCH);
+        checkout_ffmpeg(&ffmpeg_path).context("Checkout ffmpeg repo failed.")?;
 
         if !ffmpeg_custom_dll_path.exists() {
             info!("Building ffmpeg to {}...", ffmpeg_custom_path);
