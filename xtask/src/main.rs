@@ -88,7 +88,9 @@ fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
     }
 
     let status = if cfg!(target_os = "macos") {
-        Command::new("gcc")
+        Command::new("clang")
+            .arg("-L/opt/homebrew/lib")
+            .arg("-I/opt/homebrew/include")
             .current_dir(ffmpeg_build_path.join("lib"))
             .arg("-shared")
             .arg("-o")
