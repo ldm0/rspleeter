@@ -23,20 +23,39 @@ const LD_PATH: &str = "LD_LIBRARY_PATH";
 #[cfg(target_os = "windows")]
 const PATH: &str = "PATH";
 
+/// Return is rebuild needed
 fn clone_ffmpeg(target_path: &Path) -> Result<()> {
-    let status = Command::new("git")
-        .arg("clone")
-        .arg("--single-branch")
-        .arg("--branch")
-        .arg("release/5.0")
-        .arg("--depth")
-        .arg("1")
-        .arg("https://github.com/ffmpeg/ffmpeg")
-        .arg(target_path)
-        .status()?;
-    if !status.success() {
-        bail!("Make install failed.");
+    const BRANCH: &str = "release/7.1";
+    if !target_path.join("configure").exists() {
+        let status = Command::new("git")
+            .arg("clone")
+            .arg("--single-branch")
+            .arg("--branch")
+            .arg(BRANCH)
+            .arg("--depth")
+            .arg("1")
+            .arg("https://github.com/ffmpeg/ffmpeg")
+            .arg(target_path)
+            .status()?;
+        if !status.success() {
+            bail!("Clone FFmpeg failed.");
+        }
     }
+
+    info!("FFmpeg repo cloned to: {}", target_path);
+
+    Command::new("git")
+        .current_dir(target_path)
+        .arg("fetch")
+        .arg("origin")
+        .arg(&BRANCH)
+        .status()?;
+
+    Command::new("git")
+        .current_dir(target_path)
+        .arg("checkout")
+        .arg("FETCH_HEAD")
+        .status()?;
 
     Ok(())
 }
@@ -62,7 +81,7 @@ fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
         .status()
         .context("Configure failed")?;
     if !status.success() {
-        bail!("Configure failed.");
+        bail!("Configure failed: {:?}", status);
     }
 
     let num_cpus = thread::available_parallelism()
@@ -165,8 +184,6 @@ fn main() -> Result<()> {
     let ffmpeg_path = Path::new("target/ffmpeg");
     let ffmpeg_prebuilt_path = cwd.join("prebuilt_ffmpeg");
 
-    let ffmpeg_configure_path = ffmpeg_path.join("configure");
-
     let ffmpeg_custom_include_path = ffmpeg_custom_path.join("include");
     let ffmpeg_custom_lib_path = ffmpeg_custom_path.join("lib");
     let ffmpeg_custom_dll_path = ffmpeg_custom_lib_path.join(FFMPEG_DLL);
@@ -183,10 +200,7 @@ fn main() -> Result<()> {
         let ffmpeg_path = PathBuf::from_path_buf(ffmpeg_path.canonicalize().unwrap()).unwrap();
         let ffmpeg_custom_path =
             PathBuf::from_path_buf(ffmpeg_custom_path.canonicalize().unwrap()).unwrap();
-        if !ffmpeg_configure_path.exists() {
-            info!("Cloning ffmpeg to {}...", ffmpeg_path);
-            clone_ffmpeg(&ffmpeg_path).context("Clone ffmpeg failed.")?;
-        }
+        clone_ffmpeg(&ffmpeg_path).context("Clone ffmpeg failed.")?;
         info!("FFmpeg repo cloned.");
 
         if !ffmpeg_custom_dll_path.exists() {
