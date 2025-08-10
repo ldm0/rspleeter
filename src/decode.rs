@@ -45,7 +45,7 @@ fn decode_resample_save(
         };
 
         let mut output_samples = AVSamples::new(
-            output_audio_info.nb_channels as i32,
+            output_audio_info.ch_layout.nb_channels,
             frame.nb_samples,
             output_audio_info.sample_fmt,
             0,
@@ -55,7 +55,8 @@ fn decode_resample_save(
         unsafe {
             resample_context
                 .convert(
-                    &mut output_samples,
+                    output_samples.audio_data.as_mut_ptr(),
+                    output_samples.nb_samples,
                     frame.extended_data as *const _,
                     frame.nb_samples,
                 )
@@ -75,10 +76,10 @@ fn init_resample_context(
     output_audio_info: &AudioInfo,
 ) -> Result<SwrContext> {
     let mut resample_context = SwrContext::new(
-        output_audio_info.channel_layout,
+        &output_audio_info.ch_layout,
         output_audio_info.sample_fmt,
         output_audio_info.sample_rate as i32,
-        decode_context.channel_layout,
+        &decode_context.ch_layout,
         decode_context.sample_fmt,
         decode_context.sample_rate,
     )
@@ -117,7 +118,7 @@ pub fn decode_audio(
     input_format_context.dump(0, &audio_path)?;
 
     let (stream_index, decoder) = input_format_context
-        .find_best_stream(ffi::AVMediaType_AVMEDIA_TYPE_AUDIO)
+        .find_best_stream(ffi::AVMEDIA_TYPE_AUDIO)
         .context("Find best stream failed.")?
         .context("Cannot find audio stream in this file.")?;
 

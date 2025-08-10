@@ -20,10 +20,10 @@ fn init_resample_context(
     pcm_data_info: &AudioInfo,
 ) -> Result<SwrContext> {
     let mut resample_context = SwrContext::new(
-        audio_parameters.codecpar.channel_layout,
+        &audio_parameters.codecpar.ch_layout(),
         audio_parameters.codecpar.format,
         audio_parameters.codecpar.sample_rate,
-        pcm_data_info.channel_layout,
+        &pcm_data_info.ch_layout,
         pcm_data_info.sample_fmt,
         pcm_data_info.sample_rate as i32,
     )
@@ -90,7 +90,7 @@ fn create_input_frame(
 ) -> AVFrame {
     let mut input_frame = AVFrame::new();
     input_frame.set_nb_samples(process_samples as i32);
-    input_frame.set_channel_layout(pcm_audio_info.channel_layout);
+    input_frame.set_ch_layout(pcm_audio_info.ch_layout.clone().into_inner());
     input_frame.set_format(pcm_audio_info.sample_fmt);
     input_frame.set_sample_rate(pcm_audio_info.sample_rate as i32);
     input_frame.alloc_buffer().unwrap();
@@ -102,7 +102,7 @@ fn create_input_frame(
 
 fn create_output_frame(audio_parameters: &AudioParameters) -> AVFrame {
     let mut output_frame = AVFrame::new();
-    output_frame.set_channel_layout(audio_parameters.codecpar.channel_layout);
+    output_frame.set_ch_layout(audio_parameters.codecpar.ch_layout().clone().into_inner());
     output_frame.set_format(audio_parameters.codecpar.format);
     output_frame.set_sample_rate(audio_parameters.codecpar.sample_rate as i32);
     output_frame
@@ -121,7 +121,7 @@ pub fn encode_pcm_data(
     let mut encode_context =
         init_encode_context(&encoder, &audio_parameters).context("Init encode context failed.")?;
 
-    let mut output_format_context = AVFormatContextOutput::create(&output_path, None)
+    let mut output_format_context = AVFormatContextOutput::create(&output_path)
         .context("Create output format context failed.")?;
 
     if let Some(output_format) = AVOutputFormat::guess_format(None, Some(&output_path), None) {
@@ -150,7 +150,7 @@ pub fn encode_pcm_data(
         .context("Init encode resample context failed.")?;
 
     let samples_per_batch = encode_context.frame_size as usize;
-    let sample_size = pcm_audio_info.sample_size * pcm_audio_info.nb_channels;
+    let sample_size = pcm_audio_info.sample_size * pcm_audio_info.ch_layout.nb_channels as usize;
     let num_samples = pcm_data.len() / sample_size;
     let num_batches = (num_samples + samples_per_batch - 1) / samples_per_batch;
     let size_per_batch = samples_per_batch * sample_size;

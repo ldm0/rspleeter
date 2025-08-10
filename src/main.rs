@@ -21,7 +21,7 @@ struct Cli {
     out_dir: PathBuf,
     #[clap(long, short, default_value = "2stems", possible_values = existing_models())]
     model_name: String,
-    #[clap(long, short, default_value = "models")]
+    #[clap(long, short, default_value = "models/models")]
     models_dir: PathBuf,
 }
 
@@ -56,7 +56,7 @@ fn main() -> Result<()> {
         .collect();
     let audio_data = AudioData::new(
         samples,
-        pcm_audio_info.nb_channels,
+        pcm_audio_info.ch_layout.nb_channels as usize,
         pcm_audio_info.sample_rate,
     );
 
