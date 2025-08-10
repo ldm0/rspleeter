@@ -10,4 +10,4 @@ anyhow = "1.0.57"
 camino = "1.0.9"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-supports-color = "1"
+supports-color = "3"
