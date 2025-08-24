@@ -13,7 +13,7 @@ anyhow = "1"
 camino = "1"
 cstr = "0.2"
 once_cell = { version = "1", features = ["parking_lot"] }
-rsmpeg =  { version = "0.17", features = ["ffmpeg7"] }
+rsmpeg =  { version = "0.18", default-features = false, features = ["ffmpeg8"] }
 # For prebuilt macos aarch64 ffmpeg support
 tensorflow = { git = "https://github.com/tensorflow/rust", rev = "1ddf5a348037402f87d67c076bf3019857eae05f" }
 tracing = "0.1"

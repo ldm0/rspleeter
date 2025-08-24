@@ -19,7 +19,7 @@ use crate::{
 struct Cli {
     input: PathBuf,
     out_dir: PathBuf,
-    #[clap(long, short, default_value = "2stems", possible_values = existing_models())]
+    #[clap(long, short, default_value = "2stems", value_parser = existing_models())]
     model_name: String,
     #[clap(long, short, default_value = "models/models")]
     models_dir: PathBuf,

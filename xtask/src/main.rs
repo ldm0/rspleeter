@@ -25,7 +25,7 @@ const PATH: &str = "PATH";
 
 /// Return is rebuild needed
 fn clone_ffmpeg(target_path: &Path) -> Result<()> {
-    const BRANCH: &str = "release/7.1";
+    const BRANCH: &str = "release/8.0";
     if !target_path.join("configure").exists() {
         let status = Command::new("git")
             .arg("clone")
@@ -61,7 +61,8 @@ fn clone_ffmpeg(target_path: &Path) -> Result<()> {
 }
 
 fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
-    let status = Command::new("./configure")
+    let mut cmd = Command::new("./configure");
+    cmd
         .current_dir(ffmpeg_path)
         .arg(format!("--prefix={}", ffmpeg_build_path))
         .arg("--disable-hwaccels")
@@ -76,7 +77,13 @@ fn build_ffmpeg(ffmpeg_path: &Path, ffmpeg_build_path: &Path) -> Result<()> {
         .arg("--disable-outdevs")
         .arg("--disable-filters")
         .arg("--disable-programs")
-        .arg("--enable-protocol=file")
+        .arg("--enable-protocol=file");
+    if cfg!(target_os = "macos") {
+        cmd
+            .arg("--extra-cflags=-I/opt/homebrew/include")
+            .arg("--extra-ldflags=-L/opt/homebrew/lib");
+    }
+    let status = cmd
         .arg("--enable-libmp3lame")
         .status()
         .context("Configure failed")?;
